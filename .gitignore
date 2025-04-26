@@ -41,6 +41,3 @@ crashlytics-build.properties
 # Other
 *.apk
 *.ap_
-
-# Ignore gradle caches
-.gradle/
