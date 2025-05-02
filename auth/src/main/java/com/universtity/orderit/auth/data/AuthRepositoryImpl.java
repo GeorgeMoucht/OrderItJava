@@ -1,6 +1,8 @@
 package com.universtity.orderit.auth.data;
 
 
+import android.content.Context;
+
 import com.universtity.orderit.auth.data.models.LoginRequest;
 import com.universtity.orderit.auth.data.models.LoginResponse;
 import com.universtity.orderit.auth.data.network.AuthApiClient;
@@ -12,8 +14,8 @@ public class AuthRepositoryImpl implements AuthRepository {
     private final AuthApiService authApiService;
 
 
-    public AuthRepositoryImpl() {
-        authApiService = AuthApiClient.getNonAuthClient().create(AuthApiService.class);
+    public AuthRepositoryImpl(Context context) {
+        authApiService = AuthApiClient.getNonAuthClient(context).create(AuthApiService.class);
     }
 
     @Override

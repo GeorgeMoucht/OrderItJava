@@ -23,7 +23,7 @@ public class LoginViewModelFactory implements ViewModelProvider.Factory {
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LoginViewModel.class)) {
             return (T) new LoginViewModel(
-                    new AuthRepositoryImpl(),
+                    new AuthRepositoryImpl(context),
                     new SessionManager(context)
             );
         }

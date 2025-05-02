@@ -4,4 +4,8 @@
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="orderit">OrderIt</string>
+    <string name="enter_base_url">Enter base URL</string>
+    <string name="save">Save</string>
+    <string name="server_settings">Server Settings</string>
+    <string name="back">Back</string>
 </resources>

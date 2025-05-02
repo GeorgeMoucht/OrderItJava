@@ -1,6 +1,7 @@
 package com.universtity.orderit.auth.presentation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,9 +20,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.universtity.orderit.auth.R;
+import com.universtity.orderit.auth.presentation.settings.ServerSettingsActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private int tapCount = 0;
+    private long lastTapTime = 0;
     private LoginViewModel loginViewModel;
     private EditText editTextUsername, editTextPassword;
     private Button buttonLogin;
@@ -36,33 +40,31 @@ public class LoginActivity extends AppCompatActivity {
         loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(this)).get(LoginViewModel.class);
 
         setupViews();
-//        SessionViewModel sessionViewModel = new ViewModelProvider(this).get(SessionViewModel.class);
-//
-//        sessionViewModel.getIsAuthenticated().observe(this, isAuthenticated -> {
-//            if (isAuthenticated) {
-//                setResult(RESULT_OK);
-////                startActivity(new Intent(this, MainActivity.class));
-//                finish();
-//            } else {
-//                setContentView(R.layout.activity_login);
-//                startFadeInAnimation();
-//
-//                // Fade-in the entire screen
-////                View rootView = findViewById(android.R.id.content);
-////                Animation fadeIn = AnimationUtils.loadAnimation(this, R.anim.fade_in);
-////                rootView.startAnimation(fadeIn);
-//
-//                loginViewModel = new ViewModelProvider(this, new LoginViewModelFactory(this)).get(LoginViewModel.class);
-//
-//                setupViews();
-//            }
-//        });
-
-
     }
 
     private void setupViews() {
         TextView textViewTitle = findViewById(R.id.textViewTitle);
+
+        textViewTitle.setOnClickListener(v -> {
+            long currentTime = System.currentTimeMillis();
+
+            if (currentTime - lastTapTime <= 1500) {
+                tapCount++;
+            } else {
+                tapCount = 1;
+            }
+
+            lastTapTime = currentTime;
+
+            if (tapCount == 5) {
+                tapCount = 0; // reset
+
+                // Launch the hidden settings activity
+                startActivity(new Intent(LoginActivity.this, ServerSettingsActivity.class));
+            }
+        });
+
+
         editTextUsername = findViewById(R.id.editTextUsername);
         editTextPassword = findViewById(R.id.editTextPassword);
         buttonLogin = findViewById(R.id.buttonLogin);
@@ -86,16 +88,6 @@ public class LoginActivity extends AppCompatActivity {
                     editTextPassword.getText().toString().trim()
             );
         });
-//        buttonLogin.setOnClickListener(v -> {
-//            // Animate button click
-//            Animation clickAnimation = AnimationUtils.loadAnimation(this, R.anim.button_click);
-//            buttonLogin.startAnimation(clickAnimation);
-//
-//            String username = editTextUsername.getText().toString().trim();
-//            String password = editTextPassword.getText().toString().trim();
-//
-//            loginViewModel.login(username, password);
-//        });
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -132,13 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.VISIBLE);
                     progressBar.animate().alpha(1f).setDuration(300).start();
                     hideKeyboard();
-
-                    // Hide keyboard
-//                    View view = this.getCurrentFocus();
-//                    if (view != null) {
-//                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//                    }
                 } else {
                     progressBar.animate().alpha(0f).setDuration(300)
                             .withEndAction(() -> progressBar.setVisibility(View.GONE)).start();
@@ -147,27 +132,18 @@ public class LoginActivity extends AppCompatActivity {
                 editTextUsername.setEnabled(!loading);
                 editTextPassword.setEnabled(!loading);
                 buttonLogin.setEnabled(!loading && areFieldsValid());
-
-//
-//                if (loading) {
-//                    buttonLogin.setEnabled(false); // During loading, disable
-//                } else {
-//                    validateFields(); // After loading, recheck fields before enabling!
-//                }
             }
         });
 
         loginViewModel.getLoginResult().observe(this, result -> {
             if (result != null && result.equals("success")) {
                 setResult(RESULT_OK);
-//                startActivity(new Intent(this, MainActivity.class));
                 finish();
             }
         });
 
         loginViewModel.getToastMessage().observe(this, message -> {
             if (message != null) {
-//                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show();
             }
         });
@@ -201,10 +177,4 @@ public class LoginActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-//    private void validateFields() {
-//        String username = editTextUsername.getText().toString().trim();
-//        String password = editTextPassword.getText().toString().trim();
-//
-//        buttonLogin.setEnabled(!username.isEmpty() && !password.isEmpty());
-//    }
 }
