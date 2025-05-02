@@ -36,6 +36,8 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.converter.gson
     implementation libs.security.crypto
+    implementation project(":auth")
+
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core
