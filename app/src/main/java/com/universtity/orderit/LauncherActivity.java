@@ -11,6 +11,11 @@ import androidx.lifecycle.ViewModelProvider;
 import com.universtity.orderit.auth.presentation.LoginActivity;
 import com.universtity.orderit.auth.presentation.session.SessionViewModel;
 
+import com.universtity.orderit.core.utils.JwtUtils;
+import com.universtity.orderit.navigation.RoleNavigator;
+import com.universtity.orderit.core.utils.SessionManager;
+
+
 public class LauncherActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> loginLauncher;
 
@@ -23,8 +28,9 @@ public class LauncherActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
-                        startActivity(new Intent(this, MainActivity.class));
-                        finish();
+                        launchByRole();
+//                        startActivity(new Intent(this, MainActivity.class));
+//                        finish();
                     }
                 }
         );
@@ -33,12 +39,30 @@ public class LauncherActivity extends AppCompatActivity {
 
         sessionViewModel.getIsAuthenticated().observe(this, isAuthenticated -> {
             if (isAuthenticated) {
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
+                launchByRole();
+//                startActivity(new Intent(this, MainActivity.class));
+//                finish();
             } else {
-                Intent loginIntent = new Intent(this, LoginActivity.class);
-                loginLauncher.launch(loginIntent);
+                loginLauncher.launch(new Intent(this, LoginActivity.class));
+//                Intent loginIntent = new Intent(this, LoginActivity.class);
+//                loginLauncher.launch(loginIntent);
             }
         });
+    }
+
+    private void launchByRole() {
+        SessionManager sessionManager = new SessionManager(this);
+        String token = sessionManager.getAccessToken();
+
+        if (token != null) {
+            String role = JwtUtils.extractUserRole(token);
+            assert role != null;
+            Intent intent = RoleNavigator.getStartIntent(this, role);
+            startActivity(intent);
+            finish();
+        } else {
+            // Force login again
+            loginLauncher.launch(new Intent(this, LoginActivity.class));
+        }
     }
 }
