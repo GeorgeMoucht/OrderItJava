@@ -6,7 +6,7 @@ import android.content.Intent;
 import com.universtity.orderit.MainActivity;
 import com.universtity.orderit.bar.BarActivity;
 import com.universtity.orderit.kitchen.KitchenActivity;
-import com.universtity.orderit.waiter.WaiterActivity;
+import com.universtity.orderit.waiter.presentation.WaiterActivity;
 
 public class RoleNavigator {
     public static Intent getStartIntent(Context context, String role) {

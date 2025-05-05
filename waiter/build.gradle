@@ -25,6 +25,8 @@ dependencies {
     implementation libs.constraintlayout
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
+    implementation libs.retrofit.v2110
+    implementation libs.converter.gson
     androidTestImplementation libs.espresso.core.v351
 
     implementation project(":core")
