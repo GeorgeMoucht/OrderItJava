@@ -37,6 +37,10 @@ dependencies {
     implementation libs.converter.gson
     implementation libs.security.crypto
     implementation project(":auth")
+    implementation project(":core")
+    implementation project(":waiter")
+    implementation project(":bar")
+    implementation project(":kitchen")
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

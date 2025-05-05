@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Waiter</string>
+    <string name="no_tables">No tables found.</string>
+    <string name="retry">Retry</string>
+</resources>

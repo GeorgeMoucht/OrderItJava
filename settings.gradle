@@ -23,3 +23,6 @@ rootProject.name = "OrderIt"
 include ':app'
 include ':core'
 include ':auth'
+include ':waiter'
+include ':bar'
+include ':kitchen'
