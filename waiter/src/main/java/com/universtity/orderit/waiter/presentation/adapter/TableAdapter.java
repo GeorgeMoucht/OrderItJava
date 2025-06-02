@@ -17,8 +17,15 @@ import com.universtity.orderit.waiter.domain.model.Table;
 
 public class TableAdapter extends ListAdapter<Table, TableAdapter.TableViewHolder> {
 
-    public TableAdapter() {
+    public interface OnTableClickListener {
+        void onTableClick(Table table);
+    }
+
+    private final OnTableClickListener listener;
+
+    public TableAdapter(OnTableClickListener listener) {
         super(DIFF_CALLBACK);
+        this.listener = listener;
     }
 
     private static final DiffUtil.ItemCallback<Table> DIFF_CALLBACK = new DiffUtil.ItemCallback<Table>() {
@@ -42,22 +49,24 @@ public class TableAdapter extends ListAdapter<Table, TableAdapter.TableViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull TableViewHolder holder, int position) {
-        holder.bind(getItem(position));
+        Table table = getItem(position);
+        holder.bind(table);
+        holder.itemView.setOnClickListener(v -> listener.onTableClick(table));
     }
 
-    static class TableViewHolder extends RecyclerView.ViewHolder {
+    public static class TableViewHolder extends RecyclerView.ViewHolder {
         private final TextView tableName;
         private final TextView status;
         private final CardView card;
 
-        TableViewHolder(@NonNull View itemView) {
+        public TableViewHolder(@NonNull View itemView) {
             super(itemView);
             tableName = itemView.findViewById(R.id.textViewTableName);
             status = itemView.findViewById(R.id.textViewStatus);
             card = (CardView) itemView;
         }
 
-        void bind(Table table) {
+        public void bind(Table table) {
             tableName.setText(table.getName());
             status.setText(table.getStatus());
 
