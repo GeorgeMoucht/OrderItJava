@@ -11,15 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
-
 import com.universtity.orderit.waiter.R;
-import com.universtity.orderit.waiter.domain.model.Product;
 import com.universtity.orderit.waiter.presentation.adapter.CategoryAdapter;
 import com.universtity.orderit.waiter.presentation.adapter.ProductAdapter;
 import com.universtity.orderit.waiter.presentation.viewmodel.MenuViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -30,8 +25,6 @@ public class MenuActivity extends AppCompatActivity {
     private CategoryAdapter categoryAdapter;
     private ProgressBar progressBar;
     private SearchView searchView;
-
-    private List<Product> allProducts = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +47,7 @@ public class MenuActivity extends AppCompatActivity {
         productRecyclerView.setAdapter(productAdapter);
 
         categoryAdapter = new CategoryAdapter(category -> {
-            viewModel.fetchProductsByCategory(category.getId());
+            viewModel.onCategoryClicked(category);
         });
 
         categoryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -72,9 +65,9 @@ public class MenuActivity extends AppCompatActivity {
             categoryAdapter.submitList(categories);
         });
 
-        viewModel.getProducts().observe(this, products -> {
-            allProducts = products;
+        viewModel.getFilteredProducts().observe(this, products -> {
             productAdapter.submitList(products);
+            productRecyclerView.setVisibility(products.isEmpty() ? View.GONE : View.VISIBLE);
         });
 
         viewModel.getError().observe(this, error -> {
@@ -90,25 +83,15 @@ public class MenuActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                filterProducts(query);
+                viewModel.onSearchQueryChanged(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterProducts(newText);
+                viewModel.onSearchQueryChanged(newText);
                 return true;
             }
         });
-    }
-
-    private void filterProducts(String query) {
-        List<Product> filtered = new ArrayList<>();
-        for (Product product : allProducts) {
-            if (product.getName().toLowerCase().contains(query.toLowerCase())) {
-                filtered.add(product);
-            }
-        }
-        productAdapter.submitList(filtered);
     }
 }

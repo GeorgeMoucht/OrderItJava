@@ -10,6 +10,6 @@ public class ProductDto {
 
     @SerializedName("category_id")
     public int categoryId;
-    @SerializedName("image")
+    @SerializedName("image_url")
     public String image;
 }
