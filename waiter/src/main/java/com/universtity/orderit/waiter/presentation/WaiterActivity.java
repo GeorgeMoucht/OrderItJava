@@ -1,5 +1,7 @@
+// WaiterActivity.java
 package com.universtity.orderit.waiter.presentation;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,13 +15,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.universtity.orderit.waiter.R;
+import com.universtity.orderit.waiter.domain.model.Table;
 import com.universtity.orderit.waiter.presentation.adapter.TableAdapter;
 import com.universtity.orderit.waiter.presentation.viewmodel.WaiterViewModel;
 
 public class WaiterActivity extends AppCompatActivity {
 
     private WaiterViewModel viewModel;
-    private TableAdapter adapter;
     private ProgressBar progressBar;
     private LinearLayout emptyStateLayout;
 
@@ -38,27 +40,31 @@ public class WaiterActivity extends AppCompatActivity {
         emptyStateLayout = findViewById(R.id.emptyStateLayout);
 
         Button buttonRetry = findViewById(R.id.buttonRetry);
-        buttonRetry.setOnClickListener(v -> {
-            viewModel.fetchTables();
+        buttonRetry.setOnClickListener(v -> viewModel.fetchTables());
+
+        TableAdapter adapter = new TableAdapter(table -> {
+            if ("Ελεύθερο".equalsIgnoreCase(table.getStatus())) {
+                Intent intent = new Intent(this, MenuActivity.class);
+                intent.putExtra("table_id", table.getId());
+                startActivity(intent);
+            }
         });
 
-        adapter = new TableAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-    }
 
-    private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(WaiterViewModel.class);
-
         viewModel.getTables().observe(this, tables -> {
             adapter.submitList(tables);
             emptyStateLayout.setVisibility(tables.isEmpty() ? View.VISIBLE : View.GONE);
-
-            // Hide retry button if data is presented
             if (!tables.isEmpty()) {
                 findViewById(R.id.buttonRetry).setVisibility(View.GONE);
             }
         });
+    }
+
+    private void setupViewModel() {
+        viewModel = new ViewModelProvider(this).get(WaiterViewModel.class);
 
         viewModel.getIsLoading().observe(this, loading ->
                 progressBar.setVisibility(loading ? View.VISIBLE : View.GONE)
@@ -69,7 +75,6 @@ public class WaiterActivity extends AppCompatActivity {
                 emptyStateLayout.setVisibility(View.VISIBLE);
                 TextView emptyMessage = findViewById(R.id.textEmptyMessage);
                 emptyMessage.setText(error);
-
                 findViewById(R.id.buttonRetry).setVisibility(View.VISIBLE);
             }
         });
